@@ -1,4 +1,4 @@
-# Clicker Game
+# Boilerplate
 
 Don't forget to add a .env file with these params:
 - PORT=3001
