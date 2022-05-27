@@ -1,17 +1,13 @@
 import React, { Component } from "react";
-import AuthService from "../../services/AuthService";
-import "./Login.scss";
+import "./Login.css";
 
 export default class Login extends Component {
   constructor(props) {
-    super(props);
-    this.authService = new AuthService();
+    super(props)
+    this.state = {
+      username: ''
+    };
   }
-
-  state = {
-    username: "",
-    password: ""
-  };
 
   handleChange = e => {
     const { name, value } = e.target;
@@ -21,19 +17,12 @@ export default class Login extends Component {
   handleLogin = e => {
     const { setUser, history } = this.props;
     e.preventDefault();
-    this.authService.login(this.state).then(
-      user => {
-        setUser(user);
-        history.push("/");
-      },
-      error => {
-        console.error(error);
-      }
-    );
+    setUser(this.state.username);
+    history.push("/");
   };
 
   render() {
-    const { username, password } = this.state;
+    const { username } = this.state;
 
     return (
       <div className="login-container">
@@ -51,19 +40,7 @@ export default class Login extends Component {
               placeholder="Username"
             />
           </div>
-          <div className="login-param">
-            <label>Password</label>
-            <input
-              className="login-field"
-              type="password"
-              name="password"
-              value={password}
-              onChange={this.handleChange}
-              required
-              placeholder="Password"
-            />
-          </div>
-          <input className="submit-button" type="submit" value="Login" />
+          <input className="submit-button" type="submit" value="Join" />
         </form>
       </div>
     );

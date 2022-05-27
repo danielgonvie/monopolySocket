@@ -1,65 +1,31 @@
 import React, { Component } from "react";
-import { Switch, Route, Link } from "react-router-dom";
-
-import AuthService from "./services/AuthService";
+import { Switch, Route } from "react-router-dom";
 
 import Login from "./components/Login/Login";
-import SignUp from "./components/Signup/Signup";
-import MainBar from "./components/MainBar/MainBar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.scss";
+import "./App.css";
+import MonopolyGame from "./components/MonopolyGame/MonopolyGame";
 
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.authService = new AuthService();
   }
 
   state = {
-    user: null,
+    username: null,
   };
 
-  setUser = user => {
-    this.setState({ ...this.state, user });
-  };
-
-  fetchUser = () => {
-    if (this.state.user === null) {
-      this.authService
-        .loggedInUser()
-        .then(
-          user => {
-            this.setUser(user);
-          },
-          error => {
-            this.setUser(false);
-          }
-        )
-        .catch(() => {
-          this.setUser(false);
-        });
-    }
+  setUser = username => {
+    this.setState({ ...this.state, username });
   };
 
   componentDidMount() {
-    this.fetchUser();
+
   }
 
-  handleLogout = e => {
-    e.preventDefault();
-    this.authService.logout(this.state).then(
-      () => {
-        this.setState({ user: null });
-      },
-      error => {
-        console.error(error);
-      }
-    );
-  };
-
   render() {
-    const { user } = this.state;
+    const { username } = this.state;
 
     const NoMatch = ({ location }) => (
       <div className="nomatch-component">
@@ -74,24 +40,14 @@ export default class App extends Component {
 
     return (
       <div>
-        {user && (
+        {username && (
           <Switch>
             <Route
               exact
               path="/"
               render={match => (
                 <React.Fragment>
-                  <MainBar {...match} user={user} logout={this.handleLogout}></MainBar>
-                  
-                </React.Fragment>
-              )}
-            />
-            <Route
-              exact
-              path="/users/:id"
-              render={match => (
-                <React.Fragment>
-                  <MainBar {...match} user={user} logout={this.handleLogout}></MainBar>
+                  <MonopolyGame {...match} username={username}></MonopolyGame>
                 </React.Fragment>
               )}
             />
@@ -99,40 +55,14 @@ export default class App extends Component {
           </Switch>
         )}
 
-        {!user && (
+        {!username && (
           <Switch>
             <Route
               exact
               path="/"
               render={match => (
                 <React.Fragment>
-                  Home No User
-                </React.Fragment>
-              )}
-            />
-            <Route
-              exact
-              path="/users/:id"
-              render={match => (
-                <React.Fragment>
-                </React.Fragment>
-              )}
-            />
-            <Route
-              exact
-              path="/login"
-              render={match => (
-                <React.Fragment>
                   <Login {...match} setUser={this.setUser}/>
-                </React.Fragment>
-              )}
-            />
-            <Route
-              exact
-              path="/signup"
-              render={match => (
-                <React.Fragment>
-                  <SignUp {...match} setUser={this.setUser}/>
                 </React.Fragment>
               )}
             />

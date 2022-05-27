@@ -41,6 +41,37 @@ server.on('error', error => {
   }
 });
 
+const socketio = require('socket.io');
+const io = socketio(server, {
+  cors: {
+    origin: '*',
+  }
+});
+
+io.on('connection', socket => {
+  console.log("hay conexion samanta")
+  let users;
+
+  socket.on('connected', (username) => {
+    console.log(username, 'connected');
+    io.emit("justMe", {});
+  })
+
+  socket.on('message', (username, message) => {
+    console.log("message arrived", message)
+    io.emit("displayMessage", {username, message});
+  })
+
+  socket.on('joinedLobby', (username) => {
+    console.log(username, "que tenemos en el back")
+    io.emit("updateUsers", roomId, room.currentUsers);
+  })
+
+  socket.on('disconnect', () => {
+    console.log("alguien se fue")
+  })
+})
+
 server.listen(process.env.PORT, () => {
   console.log(`Listening on http://localhost:${process.env.PORT}`);
 });

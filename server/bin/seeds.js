@@ -19,27 +19,8 @@ mongoose
 
 let users = [
   {
-    name: "Ductor",
     username: "ductor",
-    password: bcrypt.hashSync("ductor", bcrypt.genSaltSync(bcryptSalt)),
-  },
-  {
-    name: "El pepe",
-    username: "pepe",
-    password: bcrypt.hashSync("pepe", bcrypt.genSaltSync(bcryptSalt)),
-  },
-  {
-    name: "Cheems",
-    username: "cheems",
-    password: bcrypt.hashSync("cheems", bcrypt.genSaltSync(bcryptSalt)),
-    points: 100,
-    completed: []
-  },
-  {
-    name: "Cookie",
-    username: "cookie",
-    password: bcrypt.hashSync("cookie", bcrypt.genSaltSync(bcryptSalt)),
-  }  
+  }
 ];
 
 User.deleteMany()
