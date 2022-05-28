@@ -1,48 +1,43 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import "./Login.css";
 
-export default class Login extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      username: ''
-    };
-  }
+function Login(props){
 
-  handleChange = e => {
-    const { name, value } = e.target;
-    this.setState({ ...this.state, [name]: value });
+  const [username,setUsername] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setUsername(e.target.value);
   };
 
-  handleLogin = e => {
-    const { setUser, history } = this.props;
+  const handleLogin = (e) => {
+    const { setUser } = props;
     e.preventDefault();
-    setUser(this.state.username);
-    history.push("/");
+    setUser(username);
+    navigate('/monopoly');
   };
 
-  render() {
-    const { username } = this.state;
-
-    return (
-      <div className="login-container">
-        <h1 className="login-title">Login</h1>
-        <form className="login-form" onSubmit={this.handleLogin}>
-          <div className="login-param">
-            <label>Username</label>
-            <input
-              className="login-field"
-              type="text"
-              name="username"
-              value={username}
-              onChange={this.handleChange}
-              required
-              placeholder="Username"
-            />
-          </div>
-          <input className="submit-button" type="submit" value="Join" />
-        </form>
-      </div>
-    );
-  }
+  return (
+    <div className="login-container">
+      <h1 className="login-title">Login</h1>
+      <form className="login-form" onSubmit={(e) => handleLogin(e)}>
+        <div className="login-param">
+          <label>Username</label>
+          <input
+            className="login-field"
+            type="text"
+            name="username"
+            value={username}
+            onChange={handleChange}
+            required
+            placeholder="Username"
+          />
+        </div>
+        <input className="submit-button" type="submit" value="Join" />
+      </form>
+    </div>
+  );
 }
+
+export default Login;

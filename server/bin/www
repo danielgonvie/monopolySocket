@@ -42,24 +42,40 @@ server.on('error', error => {
 });
 
 const socketio = require('socket.io');
+
 const io = socketio(server, {
   cors: {
     origin: '*',
   }
 });
 
-io.on('connection', socket => {
-  console.log("hay conexion samanta")
-  let users;
+let monopolyPlayers =[];
+let hasBegun = false;
 
-  socket.on('connected', (username) => {
+io.on('connection', socket => {
+  console.log("hay cerdos en el matadero")
+
+  socket.on('connectedMonopoly', (username) => {
     console.log(username, 'connected');
-    io.emit("justMe", {});
+    //Comprobamos si el usuario es el único player, para hacerlo líder de la partida.
+    if(monopolyPlayers.length === 0) { 
+      monopolyPlayers = [...monopolyPlayers, {username:username, host: true, socketId: socket.id}];
+      host = true;
+    } else {
+      monopolyPlayers = [...monopolyPlayers, {username:username, host: false, socketId: socket.id}];
+      host = false;
+    }
+    console.log("jugadores actuales", monopolyPlayers)
+    io.emit("someoneMonopoly", monopolyPlayers);
   })
 
-  socket.on('message', (username, message) => {
+  socket.on('hasBegun', () => {
+    io.emit("matchStarted", hasBegun);
+  })
+
+  socket.on('messageMonopoly', (username, message) => {
     console.log("message arrived", message)
-    io.emit("displayMessage", {username, message});
+    io.emit("displayMessageMonopoly", {username, message});
   })
 
   socket.on('joinedLobby', (username) => {
@@ -67,8 +83,40 @@ io.on('connection', socket => {
     io.emit("updateUsers", roomId, room.currentUsers);
   })
 
+  socket.on('someoneLeftMonopoly', (username) => {
+    console.log("alguien se fue del monopoly", username);
+    let playerIndex = monopolyPlayers.findIndex((obj) => {
+      return obj.username == username;
+    });
+    playerIndex !== -1 ? monopolyPlayers.splice(playerIndex, 1) : '';
+    console.log("esto es lo que queda", monopolyPlayers)
+    //Checkeando si sigue habiendo host
+    if (monopolyPlayers.filter(e => e.host === true).length === 0) {
+      //No hay host, seleccionamos uno nuevo
+      console.log("No hay host >", monopolyPlayers.length);
+      monopolyPlayers.length > 0 ? monopolyPlayers[0].host = true : '';
+      console.log("después de irse la peñusqui", monopolyPlayers)
+
+    }
+    io.emit("someoneMonopoly", monopolyPlayers);
+  })
+
   socket.on('disconnect', () => {
-    console.log("alguien se fue")
+    console.log("alguien se fue", socket.id);
+    let playerIndex = monopolyPlayers.findIndex((obj) => {
+      return obj.socketId == socket.id;
+    });
+    playerIndex !== -1 ? monopolyPlayers.splice(playerIndex, 1) : '';
+    console.log("esto es lo que queda", monopolyPlayers)
+    //Checkeando si sigue habiendo host
+    if (monopolyPlayers.filter(e => e.host === true).length === 0) {
+      //No hay host, seleccionamos uno nuevo
+      console.log("No hay host >", monopolyPlayers.length);
+      monopolyPlayers.length > 0 ? monopolyPlayers[0].host = true : '';
+      console.log("después de irse la peñusqui", monopolyPlayers)
+
+    }
+    io.emit("someoneMonopoly", monopolyPlayers);
   })
 })
 

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Switch, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 
 import Login from "./components/Login/Login";
 
@@ -10,6 +10,7 @@ import MonopolyGame from "./components/MonopolyGame/MonopolyGame";
 export default class App extends Component {
   constructor(props) {
     super(props);
+
   }
 
   state = {
@@ -17,6 +18,7 @@ export default class App extends Component {
   };
 
   setUser = username => {
+    console.log(username)
     this.setState({ ...this.state, username });
   };
 
@@ -27,47 +29,53 @@ export default class App extends Component {
   render() {
     const { username } = this.state;
 
-    const NoMatch = ({ location }) => (
+    const NoMatch = ({ location }) => {
+      console.log(location)
+      return(
       <div className="nomatch-component">
         <img
           className="no-gif"
           src="https://media2.giphy.com/media/ly8G39g1ujpNm/giphy.gif?cid=790b761142e4c6ee9a3e38ce715d90695af72b14bdcd671f&rid=giphy.gif"
           alt="404"
         ></img>
-         
+        No se encontró <b>{location.pathname}</b> 
       </div>
-    );
+    )};
 
     return (
       <div>
         {username && (
-          <Switch>
+          <Routes>
             <Route
               exact
               path="/"
-              render={match => (
-                <React.Fragment>
-                  <MonopolyGame {...match} username={username}></MonopolyGame>
-                </React.Fragment>
-              )}
+              element={<Link to="/monopoly">MONOPOLY</Link>}
             />
-            <Route component={NoMatch} />
-          </Switch>
+            <Route
+              exact
+              path="/monopoly"
+              element={<MonopolyGame username={username} />}
+            />
+
+            <Route element={<NoMatch/>} />
+          </Routes>
         )}
 
         {!username && (
-          <Switch>
+          <Routes>
             <Route
               exact
               path="/"
-              render={match => (
-                <React.Fragment>
-                  <Login {...match} setUser={this.setUser}/>
-                </React.Fragment>
-              )}
+              element={<Login setUser={this.setUser}/>}
             />
-            <Route component={NoMatch} />
-          </Switch>
+            <Route
+              exact
+              path="/monopoly"
+              element={<Login setUser={this.setUser}/>}
+            />
+
+            <Route element={<NoMatch/>} />
+          </Routes>
         )}
       </div>
     );
