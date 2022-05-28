@@ -1,50 +1,44 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from 'react-router-dom'
 import MonopolyLobby from "../MonopolyLobby/MonopolyLobby";
 import socket from '../Socket/Socket';
-import "./MonopolyGame.css";
+import "./MonopolyGame.scss";
 
-export default class MonopolyGame extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      username: this.props.username,
-      players: [],
-      hasBegun: false,
-      loading: true,
-      host: false
-    };
-  }
+function MonopolyGame(props){
+  const location = useLocation();
+  const [username] = useState(props.username);
+  const [players,setPlayers] = useState([]);
+  const [hasBegun,setHasBegun] = useState(false);
+  const [loading,setLoading] = useState(true);
+  const [host,setHost] = useState(false);
 
-  componentDidMount() {
-    const username = this.props.username;
-    socket.emit('connectedMonopoly', this.state.username);
-    socket.on('someoneMonopoly', ( players ) => {
+
+  useEffect(()=>{
+    console.log('component mounted!')
+    const username = props.username;
+    socket.emit('connectedMonopoly', username);
+    socket.on('someoneMonopoly', ( playersArr ) => {
       //Seteamos para el usuario la cantidad de jugadores actuales y le decimos al front quien es el host.
-      let playerIdx = players.findIndex((obj) => {
-        return obj.username === this.state.username;
+      let playerIdx = playersArr.findIndex((obj) => {
+        return obj.username === username;
       });
-      console.log("cuando se VAAAAAA", players, playerIdx);
-      playerIdx !== -1 ?
-      this.setState({
-        ...this.state,
-        players,
-        host: players[playerIdx].host
-      }) : console.log("No está el men");
+      console.log("cuando se VAAAAAA", playersArr, playerIdx);
+      if (playerIdx !== -1) {
+        setPlayers(playersArr)
+        setHost(playersArr[playerIdx].host)
+      } else {
+        console.log("No está el men");
+      }
       
-      
-      console.log("El estado de los jugadores", this.state.players)
+      console.log("El estado de los jugadores", playersArr)
     })
 
     socket.emit('hasBegun');
 
-    socket.on('matchStarted', (hasBegun) => {
-      this.setState({
-        ...this.state,
-        hasBegun,
-        loading: false
-      })
-      console.log("La partida ha comenzado?", this.state.hasBegun)
+    socket.on('matchStarted', (hasBegunServer) => {
+      setHasBegun(hasBegunServer);
+      setLoading(false);
+      console.log("La partida ha comenzado?", hasBegun)
     })
     
     document.onmouseover = function() {
@@ -57,26 +51,24 @@ export default class MonopolyGame extends Component {
 
     window.onpopstate = function() {
         if (!window.innerDocClick) {
-          const location = useLocation();
           console.log(location.pathname);
           socket.emit('someoneLeftMonopoly', username);
         }
     }
-  }
+  },[])
 
-  render() {
 
-    return (
-      <div className="main-bar">
-        <h1>Componente Monopoly</h1>
-        <p>Hola {this.state.username} {this.state.host ? '👑' : ''}</p>
-        {this.state.loading ?
-        <p>Cargando...</p> :
-        this.state.hasBegun ? 
-        <h1>MONOPOLY BOARD GAME ~ el juego</h1> :
-        this.state.players.length !== 0 ? <MonopolyLobby username={this.state.username} players={this.state.players} host={this.state.host}></MonopolyLobby> : 'Cargando el loby...'
-        }
-      </div>
-    );
-  }
+  return (
+    <div className="main-bar">
+      <p>Hola {username}</p>
+      {loading ?
+      <p>Cargando...</p> :
+      hasBegun ? 
+      <h1>MONOPOLY BOARD GAME ~ el juego</h1> :
+      players.length !== 0 ? <MonopolyLobby username={username} players={players} host={host}></MonopolyLobby> : 'Cargando el loby...'
+      }
+    </div>
+  );
 }
+
+export default MonopolyGame;

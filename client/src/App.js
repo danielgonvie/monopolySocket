@@ -4,7 +4,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import Login from "./components/Login/Login";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
+import "./App.scss";
 import MonopolyGame from "./components/MonopolyGame/MonopolyGame";
 
 export default class App extends Component {
