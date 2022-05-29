@@ -1,9 +1,8 @@
-* {
-    padding: 0px;
-    margin: 0px;
-}
+*, h1,h2 {
+  padding: 0px;
+  margin: 0px;
 
-.container{
+  .container{
     display:flex;
     justify-content: center;
     min-width:100vw;
@@ -11,40 +10,181 @@
     overflow: hidden;
     background-color: rgb(170, 247, 247);
     padding:0;
+    margin: 0px;
+
+    .main-window{
+      background-color: rgb(107, 65, 134);
+      width: 95%;
+      height: 90%;
+      display: flex;
+
+			.players-container{
+				background-color: #1c1c24;
+				color: #e0e3ea;
+				flex-shrink: 0;
+				flex-basis: 20%;
+				display:flex;
+				flex-direction: column;
+				align-items: center;
+
+				.players-title{
+					color: #e7ebf6;
+					width: 100%;
+					text-align: center;
+					flex-shrink: 0;
+					flex-basis: 10%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					font-size: 2vw;
+					padding: 10px 0px;
+					border-bottom: 2px solid rgb(61, 60, 60);
+				}
+
+				.players-list{
+					flex-shrink: 0;
+					width: 100%;
+					flex-basis: 80%;
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					
+					.player-name{
+						margin: 1vh;
+						font-size: 1.1vw;
+
+						.cross-kick{
+							display:inline-block;
+							cursor: pointer;
+						}
+					}
+				}
+
+				.start-game{
+					width: 100%;
+					flex-basis: 10%;
+					display:flex;
+					justify-content: center;
+					align-items: center;
+
+					.button {
+						margin: 0px;
+						padding: 8px;
+						background-color: #2b2f3b;
+						border-radius: 25px;
+						&:hover{
+							border:1px solid white;
+							cursor: pointer;
+							box-shadow: 0 0 0 1px #d0d0d0;
+						}
+						&:active {
+							background-color: #2b2f3b;
+							transform: translateY(2px);
+						}
+
+					}
+				}
+			}
+
+			.chat-box{
+				background-color: #232429;
+				width: 100%;
+				height:100%;
+				display:flex;
+				flex-direction: column;
+
+				.chat-messages{
+					flex-basis: 95%;
+					padding: 10px;
+
+					.chat-bubble{
+						color:white;
+						display: flex;
+						flex-direction: row;
+						align-items: center;
+						margin-bottom: 10px;;
+
+						h1, p {
+							margin: 0px;
+							padding: 0px;
+						}
+						.message-author{
+							font-size: 1.1vw;
+							font-weight: bolder;
+							margin: 0;
+							padding: 0;
+							line-height: 18px;
+							margin-right: 5px;
+						}
+					
+						.message-text{
+							font-size: 1.1vw;
+							margin: 0;
+							padding: 0;
+							line-height: 20px;
+						}
+
+						.red{
+							color:red;
+						}
+
+						.blue{
+							color:blue;
+						}
+					}
+				}
+
+				.chat-input{
+					display:flex;
+					flex-basis: 5%;
+					.send-content{
+						flex-basis: 95%;
+					}
+
+					.send-icon{
+						width: 12%;
+						height: 100%;
+						cursor: pointer;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						background-color: #2b2f3b;
+						flex-basis: 5%;
+						color: #e0e3ea;
+						&:hover{
+							color: white;
+						}
+
+						:active{
+								color: rgb(33,33,33);
+						}
+
+						span{
+							margin: 0;
+							padding: 0;
+						}
+					}
+				
+
+
+				}
+
+			}
+    }
+  }
 }
 
-.main-window{
-    background-color: rgb(107, 65, 134);
-    width: 95%;
-    height: 90%;
-    display: flex;
-}
 
-.players-container{
-    background-color: rgb(192, 202, 46);
-    flex-shrink: 0; /* shrinks to 0 to apply 70% width*/
-    flex-basis: 25%; /* sets initial width to 70% */
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-}
 
-.players-title{
 
-}
 
-.players-list{
 
-}
 
-.chat-box{
-    background-color: rgb(90, 108, 214);
-}
 
-.player-name{
-    
-}
 
-.start-game{
-    
-}
+
+
+
+
+
+

@@ -101,6 +101,20 @@ io.on('connection', socket => {
     io.emit("someoneMonopoly", monopolyPlayers);
   })
 
+  socket.on('kickPlayerMonopoly', (username) => {
+    console.log("alguien fue kickeado", username);
+    let playerIndex = monopolyPlayers.findIndex((obj) => {
+      return obj.username == username;
+    });
+    playerIndex !== -1 ? monopolyPlayers.splice(playerIndex, 1) : '';
+    io.emit("youBeenKickedMonopoly", username);
+    io.emit("someoneMonopoly", monopolyPlayers);
+  })
+
+  socket.on('newMessageMonopoly', (username, message, color) => {
+    io.emit("updateMessagesMonopoly", username, message, color);
+  })
+
   socket.on('disconnect', () => {
     console.log("alguien se fue", socket.id);
     let playerIndex = monopolyPlayers.findIndex((obj) => {

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import MonopolyLobby from "../MonopolyLobby/MonopolyLobby";
 import socket from '../Socket/Socket';
 import "./MonopolyGame.scss";
 
 function MonopolyGame(props){
   const location = useLocation();
+  const navigate = useNavigate();
   const [username] = useState(props.username);
   const [players,setPlayers] = useState([]);
   const [hasBegun,setHasBegun] = useState(false);
@@ -39,6 +40,11 @@ function MonopolyGame(props){
       setHasBegun(hasBegunServer);
       setLoading(false);
       console.log("La partida ha comenzado?", hasBegun)
+    })
+
+    socket.on('youBeenKickedMonopoly', (user) => {
+      console.log(user, "fuiste kicked?")
+      if(user === username){ navigate('/') }
     })
     
     document.onmouseover = function() {
