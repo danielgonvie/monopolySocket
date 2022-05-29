@@ -27,6 +27,8 @@ function MonopolyGame(props){
       if (playerIdx !== -1) {
         setPlayers(playersArr)
         setHost(playersArr[playerIdx].host)
+        console.log("vas a mandar elvento o que");
+        socket.emit(`newHostMonopoly`, playersArr[playerIdx].username)
       } else {
         socket.emit('leftMonopoly', username);
         console.log("No está el men");  

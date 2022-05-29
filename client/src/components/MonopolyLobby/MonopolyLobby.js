@@ -25,12 +25,17 @@ export default class MonopolyLobby extends Component {
 
     socket.on('hasJoinedMonopoly', (username) => {
       console.log("alguien se ha unido");
-      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, join: true}]})
+      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, type: 'join'}]})
     })
 
     socket.on('leftMonopoly', (username) => {
       console.log("alguien se ha idp");
-      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, join: false}]})
+      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, type: 'left'}]})
+    })
+
+    socket.on('newHostMonopoly', (username) => {
+      console.log("entró al event del new host");
+      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, type: 'host'}]})
     })
 
     document.addEventListener('keydown', this.checkKey.bind(this));
@@ -57,7 +62,7 @@ export default class MonopolyLobby extends Component {
             {this.showPlayers()}
           </div>
             {
-              this.state.host ? <div className="start-game"><div className="button">Iniciar partida</div></div> : ''
+              this.props.host ? <div className="start-game"><div className="button">Iniciar partida</div></div> : ''
             }
         </div>
         <div className="chat-box">
@@ -94,13 +99,17 @@ export default class MonopolyLobby extends Component {
         <h1 className={"message-author " + message.color}>{message.username + ':'}</h1>
         <p className="message-text">{message.message}</p>
       </div>
-    } else if (message.join) {
+    } else if (message.type === 'join') {
       return <div key={i} className="chat-bubble">
         <p className="message-text">{message.username} se ha unido a la sala.</p>
       </div>
-    } else {
+    } else if (message.type === 'left'){
       return <div key={i} className="chat-bubble">
         <p className="message-text">{message.username} se ido de la sala.</p>
+      </div>
+    } else if (message.type === 'host'){
+      return <div key={i} className="chat-bubble">
+        <p className="message-text">{message.username} es el nuevo host de la sala.</p>
       </div>
     }
     }
