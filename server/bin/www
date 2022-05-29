@@ -66,6 +66,7 @@ io.on('connection', socket => {
       host = false;
     }
     console.log("jugadores actuales", monopolyPlayers)
+    io.emit('hasJoinedMonopoly', username);
     io.emit("someoneMonopoly", monopolyPlayers);
   })
 
@@ -107,8 +108,13 @@ io.on('connection', socket => {
       return obj.username == username;
     });
     playerIndex !== -1 ? monopolyPlayers.splice(playerIndex, 1) : '';
-    io.emit("youBeenKickedMonopoly", username);
+    io.emit("leftMonopoly", username);
+    io.emit('youBeenKickedMonopoly', username);
     io.emit("someoneMonopoly", monopolyPlayers);
+  })
+
+  socket.on('beenKickedMonopoly', (username) => {
+    io.emit('someoneLeftMonopoly', username);
   })
 
   socket.on('newMessageMonopoly', (username, message, color) => {

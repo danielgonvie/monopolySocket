@@ -28,7 +28,8 @@ function MonopolyGame(props){
         setPlayers(playersArr)
         setHost(playersArr[playerIdx].host)
       } else {
-        console.log("No está el men");
+        socket.emit('leftMonopoly', username);
+        console.log("No está el men");  
       }
       
       console.log("El estado de los jugadores", playersArr)
@@ -44,6 +45,7 @@ function MonopolyGame(props){
 
     socket.on('youBeenKickedMonopoly', (user) => {
       console.log(user, "fuiste kicked?")
+      socket.emit('beenKickedMonopoly', user);
       if(user === username){ navigate('/') }
     })
     

@@ -20,6 +20,16 @@ export default class MonopolyLobby extends Component {
     socket.on('updateMessagesMonopoly', (username, message, color) => {
       this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, message, color}]})
     })
+
+    socket.on('hasJoinedMonopoly', (username) => {
+      console.log("alguien se ha unido");
+      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, join: true}]})
+    })
+
+    socket.on('leftMonopoly', (username) => {
+      console.log("alguien se ha idp");
+      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, join: false}]})
+    })
   }
 
   kickPlayer(username){
@@ -72,11 +82,22 @@ export default class MonopolyLobby extends Component {
 
   displayMessages = () => {
     const messages = this.state.monopolyChat;
-    return messages.map((message, i) => 
-    <div key={i} className="chat-bubble">
-      <h1 className={"message-author " + message.color}>{message.username} :</h1>
-      <p className="message-text">{message.message}</p>
-    </div>
+    return messages.map((message, i) => {
+    if (message.color) {
+      return <div key={i} className="chat-bubble">
+        <h1 className={"message-author " + message.color}>{message.username} :</h1>
+        <p className="message-text">{message.message}</p>
+      </div>
+    } else if (message.join) {
+      return <div key={i} className="chat-bubble">
+        <p className="message-text">{message.username} se ha unido a la sala.</p>
+      </div>
+    } else {
+      return <div key={i} className="chat-bubble">
+        <p className="message-text">{message.username} se ido de la sala.</p>
+      </div>
+    }
+    }
   )
   }
 
