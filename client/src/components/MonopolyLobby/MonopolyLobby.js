@@ -19,6 +19,8 @@ export default class MonopolyLobby extends Component {
   componentDidMount() {
     socket.on('updateMessagesMonopoly', (username, message, color) => {
       this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, message, color}]})
+      let chatWindow = document.querySelector('.chat-messages')
+      chatWindow.scrollTop = chatWindow.scrollHeight;
     })
 
     socket.on('hasJoinedMonopoly', (username) => {
@@ -30,6 +32,9 @@ export default class MonopolyLobby extends Component {
       console.log("alguien se ha idp");
       this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, join: false}]})
     })
+
+    document.addEventListener('keydown', this.checkKey.bind(this));
+
   }
 
   kickPlayer(username){
@@ -62,6 +67,7 @@ export default class MonopolyLobby extends Component {
           <div className="chat-input">
             <input 
             type="text"
+            autoComplete="false"
             className="send-content" 
             name="inputMessage" 
             onChange={e => this.handleChange(e)} 
@@ -72,7 +78,7 @@ export default class MonopolyLobby extends Component {
           </div>
         </div>
       </div>
-    : 'Cargando lobby...'
+    : 'Cargando lobby...';
   }
 
   handleChange = e => {
@@ -85,7 +91,7 @@ export default class MonopolyLobby extends Component {
     return messages.map((message, i) => {
     if (message.color) {
       return <div key={i} className="chat-bubble">
-        <h1 className={"message-author " + message.color}>{message.username} :</h1>
+        <h1 className={"message-author " + message.color}>{message.username + ':'}</h1>
         <p className="message-text">{message.message}</p>
       </div>
     } else if (message.join) {
@@ -104,6 +110,12 @@ export default class MonopolyLobby extends Component {
   sendMessage = (e) => {
         socket.emit(`newMessageMonopoly`, this.state.username, this.state.inputMessage, this.state.color)
         this.setState({ ...this.state, inputMessage: ""})
+  }
+
+  checkKey (key) {
+    if(key.key === 'Enter'){
+      this.sendMessage()
+    }
   }
 
   render() {

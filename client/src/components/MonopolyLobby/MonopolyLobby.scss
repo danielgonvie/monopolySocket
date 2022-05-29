@@ -8,7 +8,6 @@
     min-width:100vw;
     height:100vh;
     overflow: hidden;
-    background-color: rgb(170, 247, 247);
     padding:0;
     margin: 0px;
 
@@ -73,7 +72,7 @@
 						background-color: #2b2f3b;
 						border-radius: 25px;
 						&:hover{
-							border:1px solid white;
+							border:1px solid #e0e3ea;
 							cursor: pointer;
 							box-shadow: 0 0 0 1px #d0d0d0;
 						}
@@ -96,9 +95,10 @@
 				.chat-messages{
 					flex-basis: 95%;
 					padding: 10px;
+					overflow-y: auto;
 
 					.chat-bubble{
-						color:white;
+						color:#e0e3ea;
 						display: flex;
 						flex-direction: row;
 						align-items: center;
@@ -139,6 +139,13 @@
 					flex-basis: 5%;
 					.send-content{
 						flex-basis: 95%;
+						border:0px solid #e0e3ea;
+						background-color: #2b2f3b;
+						padding: 0px 5px;
+						color: #e0e3ea;
+						&:focus {
+							outline: none;
+						}
 					}
 
 					.send-icon{
@@ -152,7 +159,7 @@
 						flex-basis: 5%;
 						color: #e0e3ea;
 						&:hover{
-							color: white;
+							color: #e0e3ea;
 						}
 
 						:active{
