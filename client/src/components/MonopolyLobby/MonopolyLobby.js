@@ -29,7 +29,12 @@ export default class MonopolyLobby extends Component {
   showPlayers(){
     console.log(this.props.host, "hola propbando")
     return this.props.players.map((player, i) => {
-      return <div className="player-name" key={i}>{player.username} {player.host ? '👑' : ''} {!player.host && this.props.host && player.username !== this.props.username ? <div className="cross-kick" onClick={(e) => this.kickPlayer(player.username)}>❌</div> : ''} </div>
+      return <div className="player-name" key={i}>{player.host ? '👑' : ''} {player.username}
+        <div className="colorPicker">
+          <div className="colorSelector"> 
+          </div>
+        </div>
+      {!player.host && this.props.host && player.username !== this.props.username ? <div className="cross-kick" onClick={(e) => this.kickPlayer(player.username)}>❌</div> : ''} </div>
     })
   }
 
