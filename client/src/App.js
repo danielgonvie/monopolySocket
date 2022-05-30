@@ -66,12 +66,12 @@ export default class App extends Component {
             <Route
               exact
               path="/"
-              element={<Login setUser={this.setUser}/>}
+              element={<Login setUser={this.setUser} username={username}/>}
             />
             <Route
               exact
               path="/monopoly"
-              element={<Login setUser={this.setUser}/>}
+              element={<Login setUser={this.setUser} username={username}/>}
             />
 
             <Route element={<NoMatch/>} />

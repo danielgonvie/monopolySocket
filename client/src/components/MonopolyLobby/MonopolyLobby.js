@@ -17,26 +17,6 @@ export default class MonopolyLobby extends Component {
   }
 
   componentDidMount() {
-    socket.on('updateMessagesMonopoly', (username, message, color) => {
-      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, message, color}]})
-      let chatWindow = document.querySelector('.chat-messages')
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    })
-
-    socket.on('hasJoinedMonopoly', (username) => {
-      console.log("alguien se ha unido");
-      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, type: 'join'}]})
-    })
-
-    socket.on('leftMonopoly', (username) => {
-      console.log("alguien se ha idp");
-      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, type: 'left'}]})
-    })
-
-    socket.on('newHostMonopoly', (username) => {
-      console.log("entró al event del new host");
-      this.setState({ ...this.state, monopolyChat: [...this.state.monopolyChat, {username, type: 'host'}]})
-    })
 
     document.addEventListener('keydown', this.checkKey.bind(this));
 
@@ -47,9 +27,9 @@ export default class MonopolyLobby extends Component {
   }
 
   showPlayers(){
-    console.log(this.props.players, "hola propbando")
+    console.log(this.props.host, "hola propbando")
     return this.props.players.map((player, i) => {
-      return <div className="player-name" key={i}>{player.username} {player.host ? '👑' : ''} {!player.host && player.username !== this.props.username ? <div className="cross-kick" onClick={(e) => this.kickPlayer(player.username)}>❌</div> : ''} </div>
+      return <div className="player-name" key={i}>{player.username} {player.host ? '👑' : ''} {!player.host && this.props.host && player.username !== this.props.username ? <div className="cross-kick" onClick={(e) => this.kickPlayer(player.username)}>❌</div> : ''} </div>
     })
   }
 
@@ -92,7 +72,8 @@ export default class MonopolyLobby extends Component {
   };
 
   displayMessages = () => {
-    const messages = this.state.monopolyChat;
+    const messages = this.props.monopolyChat;
+    console.log("ME RETRACTO", this.props.monopolyChat)
     return messages.map((message, i) => {
     if (message.color) {
       return <div key={i} className="chat-bubble">

@@ -12,6 +12,7 @@ function MonopolyGame(props){
   const [hasBegun,setHasBegun] = useState(false);
   const [loading,setLoading] = useState(true);
   const [host,setHost] = useState(false);
+  const [monopolyChat,setMonopolyChat] = useState([{username: "ductor", message:"hholaa", color: "red"}]);
 
 
   useEffect(()=>{
@@ -28,7 +29,6 @@ function MonopolyGame(props){
         setPlayers(playersArr)
         setHost(playersArr[playerIdx].host)
         console.log("vas a mandar elvento o que");
-        socket.emit(`newHostMonopoly`, playersArr[playerIdx].username)
       } else {
         socket.emit('leftMonopoly', username);
         console.log("No está el men");  
@@ -46,10 +46,41 @@ function MonopolyGame(props){
     })
 
     socket.on('youBeenKickedMonopoly', (user) => {
-      console.log(user, "fuiste kicked?")
+      console.log(user, "fuiste kicked?");
+      let playerIdx = players.findIndex((obj) => {
+        return obj.host === true;
+      });
+      if (playerIdx !== -1) {
+        if(players[playerIdx].username === user){socket.emit(`newHostMonopoly`, players[playerIdx].username)}
+      }
       socket.emit('beenKickedMonopoly', user);
       if(user === username){ navigate('/') }
     })
+
+    socket.on('hasJoinedMonopoly', (user, playersArr) => {
+      console.log("alguien se ha unido");
+      setPlayers(playersArr)
+      setMonopolyChat(monopolyChat => [...monopolyChat, {username: user, type: 'join'}])
+    })
+
+    socket.on('leftMonopoly', (user) => {
+      console.log("alguien se ha idp");
+      setMonopolyChat(monopolyChat => [...monopolyChat, {username: user, type: 'left'}])
+    })
+
+    socket.on('setNewHostMonopoly', (user) => {
+      console.log("entró al event del new host");
+      setMonopolyChat(monopolyChat => [...monopolyChat, {username: user, type: 'host'}])
+    })
+
+    socket.on('updateMessagesMonopoly', (user, message, color ) => {
+      console.log(monopolyChat, "AVER PORFAVOR", user, message, color )
+      setMonopolyChat(monopolyChat => [...monopolyChat, { username: user, message, color }]);
+      console.log("NO SE QUE PASA >", monopolyChat)
+      // let chatWindow = document.querySelector('.chat-messages')
+      // chatWindow.scrollTop = chatWindow.scrollHeight;
+    })
+
     
     document.onmouseover = function() {
       window.innerDocClick = true;
@@ -75,7 +106,7 @@ function MonopolyGame(props){
       <p>Cargando...</p> :
       hasBegun ? 
       <h1>MONOPOLY BOARD GAME ~ el juego</h1> :
-      players.length !== 0 ? <MonopolyLobby username={username} players={players} host={host}></MonopolyLobby> : 'Cargando el loby...'
+      players.length !== 0 ? <MonopolyLobby username={username} players={players} host={host} monopolyChat={monopolyChat}></MonopolyLobby> : 'Cargando el loby...'
       }
     </div>
   );

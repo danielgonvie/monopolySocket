@@ -66,8 +66,18 @@ io.on('connection', socket => {
       host = false;
     }
     console.log("jugadores actuales", monopolyPlayers)
-    io.emit('hasJoinedMonopoly', username);
+    io.emit('hasJoinedMonopoly', username, monopolyPlayers);
     io.emit("someoneMonopoly", monopolyPlayers);
+  })
+
+  socket.on('checkCurrentUsersMonopoly', (name) => {
+    console.log(monopolyPlayers, name, " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+    let nameIdx = monopolyPlayers.findIndex(player => player.username === name);
+    console.log(nameIdx, " >>>>>>>>>>>>>>>>>>>")
+    if (nameIdx === -1){ io.emit("monopolyLoginSuccess", name); }
+    else { io.emit("monopolyLoginFail", name); }
+
+    
   })
 
   socket.on('hasBegun', () => {
@@ -79,16 +89,12 @@ io.on('connection', socket => {
     io.emit("displayMessageMonopoly", {username, message});
   })
 
-  socket.on('joinedLobby', (username) => {
-    console.log(username, "que tenemos en el back")
-    io.emit("updateUsers", roomId, room.currentUsers);
-  })
-
   socket.on('someoneLeftMonopoly', (username) => {
     console.log("alguien se fue del monopoly", username);
     let playerIndex = monopolyPlayers.findIndex((obj) => {
       return obj.username == username;
     });
+    io.emit("leftMonopoly", monopolyPlayers[playerIndex].username);
     playerIndex !== -1 ? monopolyPlayers.splice(playerIndex, 1) : '';
     console.log("esto es lo que queda", monopolyPlayers)
     //Checkeando si sigue habiendo host
@@ -113,12 +119,16 @@ io.on('connection', socket => {
     io.emit("someoneMonopoly", monopolyPlayers);
   })
 
-  socket.on('beenKickedMonopoly', (username) => {
-    io.emit('someoneLeftMonopoly', username);
-  })
+  // socket.on('beenKickedMonopoly', (username) => {
+  //   io.emit('someoneLeftMonopoly', username);
+  // })
 
   socket.on('newMessageMonopoly', (username, message, color) => {
     io.emit("updateMessagesMonopoly", username, message, color);
+  })
+
+  socket.on('newHostMonopoly', (username) => {
+    io.emit("setNewHostMonopoly", username);
   })
 
   socket.on('disconnect', () => {
@@ -126,6 +136,7 @@ io.on('connection', socket => {
     let playerIndex = monopolyPlayers.findIndex((obj) => {
       return obj.socketId == socket.id;
     });
+    io.emit("leftMonopoly", monopolyPlayers[playerIndex].username);
     playerIndex !== -1 ? monopolyPlayers.splice(playerIndex, 1) : '';
     console.log("esto es lo que queda", monopolyPlayers)
     //Checkeando si sigue habiendo host
