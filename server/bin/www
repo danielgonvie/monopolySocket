@@ -50,30 +50,42 @@ const io = socketio(server, {
 });
 
 let monopolyPlayers =[];
+let colorsPicked = [];
+let allColors = ['#fe1010','#0070b8','#008000','#f2dd00','#ffb6c1','#e28112','#9c27b9','#542c0a'];
+let colorsAvailable = ['#fe1010','#0070b8','#008000','#f2dd00','#ffb6c1','#e28112','#9c27b9','#542c0a'];
 let hasBegun = false;
+let colorAvailable = '';
 
 io.on('connection', socket => {
-  console.log("hay cerdos en el matadero")
 
   socket.on('connectedMonopoly', (username) => {
-    console.log(username, 'connected');
-    //Comprobamos si el usuario es el único player, para hacerlo líder de la partida.
+    //Comprobamos si el usuario es el único player, para hacerlo líder de la partida y le asignamos un color disponible.
     if(monopolyPlayers.length === 0) { 
-      monopolyPlayers = [...monopolyPlayers, {username:username, host: true, socketId: socket.id}];
+      colorAvailable = checkAvailableColors();
+      colorsPicked.push(colorAvailable);
+      monopolyPlayers = [...monopolyPlayers, {username:username, host: true, socketId: socket.id, color: colorAvailable}];
       host = true;
     } else {
-      monopolyPlayers = [...monopolyPlayers, {username:username, host: false, socketId: socket.id}];
+      colorAvailable = checkAvailableColors();
+      colorsPicked.push(colorAvailable);
+      monopolyPlayers = [...monopolyPlayers, {username:username, host: false, socketId: socket.id, color: colorAvailable}];
       host = false;
     }
-    console.log("jugadores actuales", monopolyPlayers)
     io.emit('hasJoinedMonopoly', username, monopolyPlayers);
     io.emit("someoneMonopoly", monopolyPlayers);
   })
 
+  const checkAvailableColors = () => {
+    colorsAvailable = allColors.filter(x => !colorsPicked.includes(x));
+    return colorsAvailable[0];
+  }
+
+  const checkPickedColors = () => {
+    colorsPicked = monopolyPlayers.map(a => a.color);
+  }
+
   socket.on('checkCurrentUsersMonopoly', (name) => {
-    console.log(monopolyPlayers, name, " <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
     let nameIdx = monopolyPlayers.findIndex(player => player.username === name);
-    console.log(nameIdx, " >>>>>>>>>>>>>>>>>>>")
     if (nameIdx === -1){ io.emit("monopolyLoginSuccess", name); }
     else { io.emit("monopolyLoginFail", name); }
 
@@ -85,35 +97,31 @@ io.on('connection', socket => {
   })
 
   socket.on('messageMonopoly', (username, message) => {
-    console.log("message arrived", message)
     io.emit("displayMessageMonopoly", {username, message});
   })
 
   socket.on('someoneLeftMonopoly', (username) => {
-    console.log("alguien se fue del monopoly", username);
     let playerIndex = monopolyPlayers.findIndex((obj) => {
       return obj.username == username;
     });
     io.emit("leftMonopoly", monopolyPlayers[playerIndex].username);
     playerIndex !== -1 ? monopolyPlayers.splice(playerIndex, 1) : '';
-    console.log("esto es lo que queda", monopolyPlayers)
+    checkPickedColors();
     //Checkeando si sigue habiendo host
     if (monopolyPlayers.filter(e => e.host === true).length === 0) {
       //No hay host, seleccionamos uno nuevo
-      console.log("No hay host >", monopolyPlayers.length);
       monopolyPlayers.length > 0 ? monopolyPlayers[0].host = true : '';
-      console.log("después de irse la peñusqui", monopolyPlayers)
 
     }
     io.emit("someoneMonopoly", monopolyPlayers);
   })
 
   socket.on('kickPlayerMonopoly', (username) => {
-    console.log("alguien fue kickeado", username);
     let playerIndex = monopolyPlayers.findIndex((obj) => {
       return obj.username == username;
     });
     playerIndex !== -1 ? monopolyPlayers.splice(playerIndex, 1) : '';
+    checkPickedColors();
     io.emit("leftMonopoly", username);
     io.emit('youBeenKickedMonopoly', username);
     io.emit("someoneMonopoly", monopolyPlayers);
@@ -127,18 +135,24 @@ io.on('connection', socket => {
     io.emit("updateMessagesMonopoly", username, message, color);
   })
 
+  socket.on('changedColorMonopoly', (username, color) => {
+    let playerIndex = monopolyPlayers.findIndex((obj) => {
+      return obj.username == username;
+    });
+    monopolyPlayers[playerIndex].color = color;
+    io.emit("someoneMonopoly", monopolyPlayers);
+  })
+
   socket.on('newHostMonopoly', (username) => {
     io.emit("setNewHostMonopoly", username);
   })
 
   socket.on('disconnect', () => {
-    console.log("alguien se fue", socket.id);
     let playerIndex = monopolyPlayers.findIndex((obj) => {
       return obj.socketId == socket.id;
     });
-    io.emit("leftMonopoly", monopolyPlayers[playerIndex].username);
+    playerIndex !== -1 ? io.emit("leftMonopoly", monopolyPlayers[playerIndex].username): '';
     playerIndex !== -1 ? monopolyPlayers.splice(playerIndex, 1) : '';
-    console.log("esto es lo que queda", monopolyPlayers)
     //Checkeando si sigue habiendo host
     if (monopolyPlayers.filter(e => e.host === true).length === 0) {
       //No hay host, seleccionamos uno nuevo

@@ -11,31 +11,60 @@ export default class MonopolyLobby extends Component {
       players: this.props.players,
       host: this.props.host,
       inputMessage: "",
-      monopolyChat: [{username: "ductor", message:"hholaa", color: "red"}],
-      color: "blue",
+      monopolyChat: [],
+      color: this.props.color,
     };
   }
 
   componentDidMount() {
+    this.checkKey = this.checkKey.bind(this)
 
-    document.addEventListener('keydown', this.checkKey.bind(this));
+    window.addEventListener('keydown', this.checkKey);
 
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.checkKey);
   }
 
   kickPlayer(username){
     socket.emit('kickPlayerMonopoly', username);
   }
 
+  showColorSelector(){
+    let colorPicker = document.querySelector('.colorSelector');
+    colorPicker.classList.contains('hidden') ?
+    colorPicker.classList.remove('hidden') :
+    colorPicker.classList.add('hidden')
+  }
+
   showPlayers(){
-    console.log(this.props.host, "hola propbando")
     return this.props.players.map((player, i) => {
       return <div className="player-name" key={i}>{player.host ? '👑' : ''} {player.username}
-        <div className="colorPicker">
-          <div className="colorSelector"> 
-          </div>
-        </div>
+        {this.showColorPicker(player)}
       {!player.host && this.props.host && player.username !== this.props.username ? <div className="cross-kick" onClick={(e) => this.kickPlayer(player.username)}>❌</div> : ''} </div>
     })
+  }
+
+  showColorPicker(player){
+    if (this.props.username === player.username) {
+      return <div className="colorPicker" style={{backgroundColor: this.props.color}} onClick={(e) => this.showColorSelector()} >
+      <div className="colorSelector hidden"> 
+      {this.props.monopolyChars.map((color, i) => {
+        if(color === this.props.color){
+          return <div key={i} className='monopoly-character colorSelected' style={{backgroundColor: color}}></div> 
+        } else if (this.props.players.find(player => player.color === color) === undefined) {
+          return <div key={i} className={'monopoly-character available'} style={{backgroundColor: color}} onClick={(e) => this.props.changeColor(color)}></div> 
+        } else {
+          return <div key={i} className={'monopoly-character unavailable'} style={{backgroundColor: color}}></div> 
+        }
+      })}
+      </div>
+    </div>
+    } else {
+      return <div className="colorPicker" style={{backgroundColor: player.color}} >
+      </div>
+    }
   }
 
   showLobby(){
@@ -78,11 +107,10 @@ export default class MonopolyLobby extends Component {
 
   displayMessages = () => {
     const messages = this.props.monopolyChat;
-    console.log("ME RETRACTO", this.props.monopolyChat)
     return messages.map((message, i) => {
     if (message.color) {
       return <div key={i} className="chat-bubble">
-        <h1 className={"message-author " + message.color}>{message.username + ':'}</h1>
+        <h1 className="message-author" style={{color: message.color}}>{message.username + ':'}</h1>
         <p className="message-text">{message.message}</p>
       </div>
     } else if (message.type === 'join') {
@@ -103,7 +131,8 @@ export default class MonopolyLobby extends Component {
   }
 
   sendMessage = (e) => {
-        socket.emit(`newMessageMonopoly`, this.state.username, this.state.inputMessage, this.state.color)
+        console.log("cuantas veces entras aquí?");
+        socket.emit(`newMessageMonopoly`, this.props.username, this.state.inputMessage, this.props.color)
         this.setState({ ...this.state, inputMessage: ""})
   }
 

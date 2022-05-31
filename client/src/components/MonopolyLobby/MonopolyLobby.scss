@@ -50,28 +50,70 @@
 					
 					.player-name{
 						margin: 1vh;
-						font-size: 1.1vw;
+						font-size: calc(12px + 0.7vw);
 						display: flex;
 						justify-content: center;
 						align-items: center;
 
 						.colorPicker{
-							width: 1vw;
-							height: 1vw;
+							min-width: calc(12px + 0.5vw);
+							min-height: calc(12px + 0.5vw);
+							max-width: calc(12px + 0.5vw);
+							max-height: calc(12px + 0.5vw);
 							border-radius: 50%;
 							background-color: #d0d0d0;
 							margin: 0px 5px;
 							border: 1px solid white;
-							cursor: pointer;
+							&:hover{
+								cursor: pointer;
+							}
+
+							.hidden {
+								display: none;
+							}
 
 							.colorSelector{
 								position:relative;
 								left: 1.5vw;
+								top: -0.2vw;
 								width: 10vw;
 								height: 5vw;
 								background-color: #2b2f3b;
 								border: 1px solid #757575;
 								border-radius: 5px;
+								display: grid;
+								grid-template-columns: auto auto auto auto;
+								column-gap: 0.5vw;
+								row-gap: 0.75vw;
+								padding: 0.5vw;
+								justify-content: space-around;
+								cursor: auto;
+
+								.monopoly-character{
+									width: 1vw;
+									height: 1vw;
+									border-radius: 50%;
+									background-color: #d0d0d0;
+									margin: 0px;
+									border: 1px solid #757575;
+
+								}
+
+								.available{
+									cursor: pointer;
+									&:hover{
+										border: 1px solid white;
+									}
+								}
+
+								.unavailable{
+									cursor: not-allowed;
+									opacity: 0.4;
+								}
+
+								.colorSelected{
+									border: 1px solid white;
+								}
 							}
 						}
 
@@ -125,14 +167,16 @@
 						display: flex;
 						flex-direction: row;
 						align-items: center;
-						margin-bottom: 10px;;
+						margin-bottom: 5px;
 
 						h1, p {
 							margin: 0px;
 							padding: 0px;
+							height: fit-content;
+							line-height: normal;
 						}
 						.message-author{
-							font-size: 1.1vw;
+							font-size: calc(12px + 0.7vw);
 							font-weight: bolder;
 							margin: 0;
 							padding: 0;
@@ -141,7 +185,7 @@
 						}
 					
 						.message-text{
-							font-size: 1.1vw;
+							font-size: calc(12px + 0.7vw);
 							margin: 0;
 							padding: 0;
 							line-height: 20px;

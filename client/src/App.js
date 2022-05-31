@@ -18,7 +18,6 @@ export default class App extends Component {
   };
 
   setUser = username => {
-    console.log(username)
     this.setState({ ...this.state, username });
   };
 
@@ -30,7 +29,6 @@ export default class App extends Component {
     const { username } = this.state;
 
     const NoMatch = ({ location }) => {
-      console.log(location)
       return(
       <div className="nomatch-component">
         <img

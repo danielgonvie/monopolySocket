@@ -10,7 +10,6 @@ function Login(props){
 
   const handleChange = (e) => {
     setUsername(e.target.value);
-    console.log("CAMBIA EL username", username);
     document.querySelector('#invalid-message').classList.add('hidden');
   };
 
@@ -20,18 +19,15 @@ function Login(props){
   };
 
   socket.on('monopolyLoginSuccess', (name) => {
-    console.log("me cago en dio success", name, "hola", username)
     if(name === username){ loginSuccess(name) }
     
   });
 
   socket.on('monopolyLoginFail', (name) => {
-    console.log("me cago en dio fail")
     loginFailed();
   });
 
   useEffect(() => {
-    console.log("A VER MANIN", username)
   }, [username]);
 
   const loginSuccess = (name) => {
