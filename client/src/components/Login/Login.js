@@ -23,8 +23,12 @@ function Login(props){
     
   });
 
-  socket.on('monopolyLoginFail', (name) => {
-    loginFailed();
+  socket.on('monopolyLoginFailName', (name) => {
+    loginFailedName(name);
+  });
+
+  socket.on('monopolyLoginFailFull', (name) => {
+    loginFailedFull();
   });
 
   useEffect(() => {
@@ -38,10 +42,15 @@ function Login(props){
     navigate('/monopoly');
   };
 
-  const loginFailed = (e) => {
+  const loginFailedName = (name) => {
+    document.querySelector('#invalid-message').innerHTML = name + ' ya está en uso, por favor escoge otro.'
     document.querySelector('#invalid-message').classList.remove('hidden');
   };
 
+  const loginFailedFull = (e) => {
+    document.querySelector('#invalid-message').innerHTML = 'La sala está llena'
+    document.querySelector('#invalid-message').classList.remove('hidden');
+  };
   return (
     <div className="login-container">
       <h1 className="login-title">Login</h1>
@@ -52,6 +61,7 @@ function Login(props){
             className="login-field"
             type="text"
             name="username"
+            maxLength="16"
             value={username}
             onChange={handleChange}
             required

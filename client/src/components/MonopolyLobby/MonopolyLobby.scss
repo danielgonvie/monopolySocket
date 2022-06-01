@@ -27,6 +27,7 @@
 				align-items: center;
 
 				.players-title{
+
 					color: #e7ebf6;
 					width: 100%;
 					text-align: center;
@@ -35,7 +36,7 @@
 					display: flex;
 					justify-content: center;
 					align-items: center;
-					font-size: 2vw;
+					font-size: calc(12px + 0.9vw);
 					padding: 10px 0px;
 					border-bottom: 2px solid rgb(61, 60, 60);
 				}
@@ -48,28 +49,27 @@
 					flex-direction: column;
 					align-items: center;
 					
-					.player-name{
+					.player-info{
 						margin: 1vh;
 						font-size: calc(12px + 0.7vw);
 						display: flex;
 						justify-content: center;
 						align-items: center;
 
+						.player-name{
+							white-space: nowrap;
+							margin: 0px;
+						}
+
 						.colorPicker{
-							min-width: calc(12px + 0.5vw);
-							min-height: calc(12px + 0.5vw);
-							max-width: calc(12px + 0.5vw);
-							max-height: calc(12px + 0.5vw);
+							width: calc(12px + 0.5vw);
+							height: calc(12px + 0.5vw);
 							border-radius: 50%;
 							background-color: #d0d0d0;
 							margin: 0px 5px;
 							border: 1px solid white;
 							&:hover{
 								cursor: pointer;
-							}
-
-							.hidden {
-								display: none;
 							}
 
 							.colorSelector{
@@ -88,6 +88,10 @@
 								padding: 0.5vw;
 								justify-content: space-around;
 								cursor: auto;
+
+								.remove {
+									display: none;
+								}
 
 								.monopoly-character{
 									width: 1vw;
@@ -115,6 +119,9 @@
 									border: 1px solid white;
 								}
 							}
+							.remove {
+								display: none;
+							}
 						}
 
 						.cross-kick{
@@ -131,6 +138,10 @@
 					justify-content: center;
 					align-items: center;
 
+					.remove {
+						display: none;
+					}
+
 					.button {
 						margin: 0px;
 						padding: 8px;
@@ -146,6 +157,50 @@
 							transform: translateY(2px);
 						}
 
+					}
+				}
+
+				.warn-hover{
+					width: 100%;
+					flex-basis: 10%;
+					display:flex;
+					justify-content: center;
+					align-items: center;
+					position: relative;
+
+					.remove {
+						display: none;
+					}
+
+					.button {
+						margin: 0px;
+						padding: 8px;
+						background-color: #2b2f3b;
+						border-radius: 25px;
+						position: absolute;
+						&:hover{
+							cursor: pointer;
+							box-shadow: 0 0 0 1px #d0d0d0;
+						}
+
+					}
+				}
+
+				.warning-pre-alert{
+					background-color: red;
+					position: absolute;
+					top: -60px;
+					font-size: 12px;
+					width: 80%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					text-align: center;
+					border: 1px solid white;
+					border-radius: 5px;
+					padding: 5px;
+					p{
+						margin:0;
 					}
 				}
 			}
@@ -243,6 +298,76 @@
 
 				}
 
+			}
+
+			.full-window-background{
+				position:absolute;
+				top:0px;
+				left:0px;
+				z-index:2;
+				width: 100vw;
+				height: 100vh;
+				background-color: rgba($color: #000000, $alpha: 0.3);
+				display:flex;
+				justify-content: center;
+				align-items: center;
+
+				.warning-box {
+					background-color: #1c1c24;
+					color: #e0e3ea;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					padding: 12px;
+					border: 2px solid #757575;
+					border-radius: 10px;
+					.warning-buttons{
+						display:flex;
+						justify-content: space-around;
+						width: 100%;
+
+						.warning-button{
+							border-radius: 5px;
+							color: white;
+							display: flex;
+							justify-content: center;
+							align-items: center;
+							padding: 9px;
+							border: 1px solid #757575;
+							p{
+								margin:0px;
+								padding: 0px;
+								text-shadow: -1px 1px 0 #000000
+							}
+							&:active {
+								opacity:	0.8;
+								transform: translateY(2px);
+							}
+						}
+
+						.go{
+							background-color: rgb(74, 185, 40);
+							&:hover{
+								border: 1px solid white;
+								cursor: pointer;
+							}
+						}
+
+						.wait{
+							background-color: rgb(221, 48, 48);
+							&:hover{
+								border: 1px solid white;
+								cursor: pointer;
+							}
+						}
+					}
+
+				}
+			}
+
+			.remove {
+				display: none;
 			}
     }
   }

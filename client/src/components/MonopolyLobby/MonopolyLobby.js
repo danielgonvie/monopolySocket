@@ -33,14 +33,14 @@ export default class MonopolyLobby extends Component {
 
   showColorSelector(){
     let colorPicker = document.querySelector('.colorSelector');
-    colorPicker.classList.contains('hidden') ?
-    colorPicker.classList.remove('hidden') :
-    colorPicker.classList.add('hidden')
+    colorPicker.classList.contains('remove') ?
+    colorPicker.classList.remove('remove') :
+    colorPicker.classList.add('remove')
   }
 
   showPlayers(){
     return this.props.players.map((player, i) => {
-      return <div className="player-name" key={i}>{player.host ? '👑' : ''} {player.username}
+      return <div className="player-info" key={i}><p className="player-name">{player.host ? '👑' : ''} {player.username}</p>
         {this.showColorPicker(player)}
       {!player.host && this.props.host && player.username !== this.props.username ? <div className="cross-kick" onClick={(e) => this.kickPlayer(player.username)}>❌</div> : ''} </div>
     })
@@ -49,7 +49,7 @@ export default class MonopolyLobby extends Component {
   showColorPicker(player){
     if (this.props.username === player.username) {
       return <div className="colorPicker" style={{backgroundColor: this.props.color}} onClick={(e) => this.showColorSelector()} >
-      <div className="colorSelector hidden"> 
+      <div className="colorSelector remove"> 
       {this.props.monopolyChars.map((color, i) => {
         if(color === this.props.color){
           return <div key={i} className='monopoly-character colorSelected' style={{backgroundColor: color}}></div> 
@@ -67,16 +67,50 @@ export default class MonopolyLobby extends Component {
     }
   }
 
+  manageWarningMessage(){
+    let warningAlert = document.querySelector('#warning-alert');
+    warningAlert.classList.contains('remove') ?
+    warningAlert.classList.remove('remove') :
+    warningAlert.classList.add('remove')
+  }
+
+  showPreWarning(){
+    console.log("entra por aca")
+    let warningPreAlert = document.querySelector('.warning-pre-alert');
+    warningPreAlert.classList.contains('remove') ?
+    warningPreAlert.classList.remove('remove') :
+    warningPreAlert.classList.add('remove')
+  }
+
   showLobby(){
     return this.props.players.length > 0 ?
       <div className="main-window">
+      <div id="warning-alert" className="full-window-background remove" onClick={(e) => this.manageWarningMessage()}>
+        <div className="warning-box">
+          <p className="warning-text">¿Quieres empezar la partida con {this.props.players.length} jugadores?</p>
+          <div className="warning-buttons">
+            <div className="warning-button go" onClick={(e) => this.props.startGame()}><p>Empezar</p></div>
+            <div className="warning-button wait"><p>Aún no...</p></div>
+          </div>
+        </div>
+      </div>
         <div className="players-container">
           <h1 className="players-title">JUGADORES ({this.props.players.length})</h1>
           <div className="players-list">
             {this.showPlayers()}
           </div>
             {
-              this.props.host ? <div className="start-game"><div className="button">Iniciar partida</div></div> : ''
+              this.props.host ? 
+              <div className={this.props.players.length > 1 ? 
+              'start-game': 'warn-hover'} onMouseOver={this.showPreWarning}>
+                <div className="warning-pre-alert"><p>Necesitas al menos 2 jugadores para poder empezar la partida. </p></div>
+                <div className="button" onClick={(e) => this.props.players.length > 1 
+                ? this.manageWarningMessage() 
+                : ''}>
+                Iniciar partida
+                </div>
+              </div> 
+              : ''
             }
         </div>
         <div className="chat-box">
@@ -131,9 +165,15 @@ export default class MonopolyLobby extends Component {
   }
 
   sendMessage = (e) => {
-        console.log("cuantas veces entras aquí?");
-        socket.emit(`newMessageMonopoly`, this.props.username, this.state.inputMessage, this.props.color)
-        this.setState({ ...this.state, inputMessage: ""})
+    if(this.onlySpaces()){
+      console.log("cuantas veces entras aquí?");
+      socket.emit(`newMessageMonopoly`, this.props.username, this.state.inputMessage, this.props.color)
+      this.setState({ ...this.state, inputMessage: ""})
+    }
+  }
+
+  onlySpaces() {
+    return this.state.inputMessage.trim().length !== 0;
   }
 
   checkKey (key) {

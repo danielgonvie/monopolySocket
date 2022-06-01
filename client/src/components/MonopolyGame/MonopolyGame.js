@@ -5,7 +5,6 @@ import socket from '../Socket/Socket';
 import "./MonopolyGame.scss";
 
 function MonopolyGame(props){
-  const location = useLocation();
   const navigate = useNavigate();
   const [username] = useState(props.username);
   const [color, setColor] = useState('#fe1010');
@@ -69,8 +68,13 @@ function MonopolyGame(props){
 
     socket.on('updateMessagesMonopoly', (user, message, color ) => {
       setMonopolyChat(monopolyChat => [...monopolyChat, { username: user, message, color }]);
-      // let chatWindow = document.querySelector('.chat-messages')
-      // chatWindow.scrollTop = chatWindow.scrollHeight;
+      let chatWindow = document.querySelector('.chat-messages')
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    })
+
+    socket.on('beginGame', (monopoly) => {
+      setPlayers(monopoly);
+      setHasBegun(true);
     })
 
     
@@ -94,6 +98,12 @@ function MonopolyGame(props){
     socket.emit('changedColorMonopoly', username, color)
   };
 
+  const startGame = () => {
+    socket.emit('gameStart', )
+  };
+
+  
+
   return (
     <div className="main-bar">
       <p>Hola {username}</p>
@@ -101,7 +111,7 @@ function MonopolyGame(props){
       <p>Cargando...</p> :
       hasBegun ? 
       <h1>MONOPOLY BOARD GAME ~ el juego</h1> :
-      players.length !== 0 ? <MonopolyLobby username={username} players={players} host={host} monopolyChat={monopolyChat} monopolyChars={monopolyChars} color={color} changeColor={changeColor}></MonopolyLobby> : 'Cargando el loby...'
+      players.length !== 0 ? <MonopolyLobby username={username} players={players} host={host} monopolyChat={monopolyChat} monopolyChars={monopolyChars} color={color} changeColor={changeColor} startGame={startGame}></MonopolyLobby> : 'Cargando el loby...'
       }
     </div>
   );

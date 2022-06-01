@@ -62,13 +62,13 @@ io.on('connection', socket => {
     //Comprobamos si el usuario es el único player, para hacerlo líder de la partida y le asignamos un color disponible.
     if(monopolyPlayers.length === 0) { 
       colorAvailable = checkAvailableColors();
-      colorsPicked.push(colorAvailable);
       monopolyPlayers = [...monopolyPlayers, {username:username, host: true, socketId: socket.id, color: colorAvailable}];
+      checkPickedColors()
       host = true;
     } else {
       colorAvailable = checkAvailableColors();
-      colorsPicked.push(colorAvailable);
       monopolyPlayers = [...monopolyPlayers, {username:username, host: false, socketId: socket.id, color: colorAvailable}];
+      checkPickedColors()
       host = false;
     }
     io.emit('hasJoinedMonopoly', username, monopolyPlayers);
@@ -86,10 +86,9 @@ io.on('connection', socket => {
 
   socket.on('checkCurrentUsersMonopoly', (name) => {
     let nameIdx = monopolyPlayers.findIndex(player => player.username === name);
-    if (nameIdx === -1){ io.emit("monopolyLoginSuccess", name); }
-    else { io.emit("monopolyLoginFail", name); }
-
-    
+    if (nameIdx === -1 && monopolyPlayers.length < 8){ io.emit("monopolyLoginSuccess", name); }
+    else if ( monopolyPlayers.length >= 8 ){ io.emit("monopolyLoginFailFull", name); }
+    else { io.emit("monopolyLoginFailName", name); }
   })
 
   socket.on('hasBegun', () => {
@@ -104,7 +103,7 @@ io.on('connection', socket => {
     let playerIndex = monopolyPlayers.findIndex((obj) => {
       return obj.username == username;
     });
-    io.emit("leftMonopoly", monopolyPlayers[playerIndex].username);
+    io.emit("leftMonopoly", monopolyPlayers[playerIndex]?.username);
     playerIndex !== -1 ? monopolyPlayers.splice(playerIndex, 1) : '';
     checkPickedColors();
     //Checkeando si sigue habiendo host
@@ -136,6 +135,8 @@ io.on('connection', socket => {
   })
 
   socket.on('changedColorMonopoly', (username, color) => {
+    let colorIdx = colorsPicked.findIndex(colorArr => colorArr === color);
+    colorIdx !== -1 ? colorsPicked.splice(colorIdx) : '';
     let playerIndex = monopolyPlayers.findIndex((obj) => {
       return obj.username == username;
     });
@@ -145,6 +146,11 @@ io.on('connection', socket => {
 
   socket.on('newHostMonopoly', (username) => {
     io.emit("setNewHostMonopoly", username);
+  })
+
+  socket.on('gameStart', () => {
+    hasBegun = true;
+    io.emit("beginGame", monopolyPlayers );
   })
 
   socket.on('disconnect', () => {
